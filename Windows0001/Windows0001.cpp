@@ -1,8 +1,16 @@
 #include "framework.h"
 #include "Windows0001.h"
 
+#include "DCP.h"
+#pragma comment(lib, "DCP.lib")
+
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    static PAINTSTRUCT ps;
+    static HDC hdc;
+    static RECT r;
+    static DCP m_dcp;
     switch (message)
     {
     case WM_COMMAND:
@@ -21,12 +29,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
     case WM_PAINT:
     {
-        PAINTSTRUCT ps;
-        HDC hdc = BeginPaint(hWnd, &ps);
+        hdc = BeginPaint(hWnd, &ps);
         // TODO: Add any drawing code that uses hdc here...
+        m_dcp.GpTextOut(100, 100, _T("what"), 4);
+
+        m_dcp.Draw(hdc);
         EndPaint(hWnd, &ps);
     }
     break;
+    case WM_CREATE:
+        GetClientRect(hWnd, &r);
+        m_dcp.CreateDCP(r.right, r.bottom);
+        m_dcp.Clear(RGB24(55, 200, 55));
+
+        break;
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
@@ -46,6 +62,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
 
     // TODO: Place code here.
 
+
     // Initialize global strings
     WNDCLASS wc;
     LPCTSTR className = _T("winmain_format");
@@ -53,7 +70,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
     // Perform application initialization:
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
-    wc.hbrBackground = (HBRUSH)GetStockObject(DKGRAY_BRUSH);
+    wc.hbrBackground = (HBRUSH)GetStockObject(LTGRAY_BRUSH);
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
     wc.hInstance = hInstance;
@@ -69,6 +86,9 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
     ShowWindow(hWnd, nCmdShow);
     UpdateWindow(hWnd);
     MSG msg;
+
+
+
 
     // Main message loop:
     while (GetMessage(&msg, nullptr, 0, 0))

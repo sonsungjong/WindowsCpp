@@ -1,6 +1,4 @@
-#include <Windows.h>
-#include <tchar.h>
-#include <iostream>
+#include "framework.h"
 #include "DCP.h"
 
 // static멤버변수(클래스 멤버만 공유할 수 있는 전역변수) 초기화
